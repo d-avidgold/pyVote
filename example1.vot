@@ -1,0 +1,16 @@
+<NAME> 
+	Example 1
+<TYPE>
+	singlevote
+<COMMENTS>
+	Example of a single voting system with three candidates and five voters.
+<SIZE>
+	3x5
+<CANDIDATES>
+	A, B, C
+<VOTERS>
+	V, W, X, Y, Z
+<BALLOTS>
+	V, W, X: A
+	Y: C
+	Z: B
