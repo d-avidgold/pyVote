@@ -1,0 +1,14 @@
+<NAME> 
+	Example 5
+<TYPE>
+	singlevote
+<COMMENTS>
+	Example of a single voting system with three candidates and 15 voters, given as a schedule, not with individual ballots.
+<SIZE>
+	3x15
+<CANDIDATES>
+	P, D, W
+<SCHEDULE>
+	8: P
+	5: D
+	2: W
