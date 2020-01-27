@@ -1,13 +1,13 @@
-from parse import formatCheck, singleParse, rankParse, approvalParse
+from parse import formatCheck, parseFile
 from singlevote import majorityRule, minorityRule, dictatorship, monarchy, quota, plurality
-#from rankedvote import bordaCount
-
+from rankedvote import bordaCount
 import sys
 
 i = 1
 l = len(sys.argv)
 
-funcs = {"singlevote": singleParse, "rankedvote": rankParse, "approvalvote": approvalParse}
+def boldify(text):
+	return '\033[1m' + text + '\033[0m'
 
 while i < l:
 
@@ -15,20 +15,20 @@ while i < l:
 
 	factors = formatCheck(sys.argv[i])
 
-	if not factors or not factors["TYPE"] or factors["TYPE"] not in funcs:
+	if not factors or not factors["TYPE"] or factors["TYPE"] not in ["singlevote", "rankedvote", "approvalvote"]:
 		print("Bad file! " + sys.argv[i] + " does not exist. Halting... \n")
 		i = l
 		break
 
-	print("\nReading file: " + factors["NAME"] + "\n")
-	print("Note comments: " + factors["COMMENTS"] + "\n")
+	print(boldify("\nReading file: ") + factors["NAME"] + "\n")
+	print(boldify("Note comments: ") + factors["COMMENTS"] + "\n")
 
 	# Get candidates and ballots from file
 
-	a = funcs[factors["TYPE"]](sys.argv[i])
+	a = parseFile(sys.argv[i], factors["TYPE"])
 
 	if a: 
-		[population, candidates] = a
+		[population, candidates, typ] = a
 		i += 1
 
 	else:
@@ -41,49 +41,74 @@ while i < l:
 		while i < l and (sys.argv[i])[0] == "-":
 
 			if sys.argv[i] == "-maj":
-				majorityRule(population, candidates)
+				strin = majorityRule(population, candidates, typ)
+				if not strin:
+					print("Under Majority rule, there is no winner...\n")
+				else:
+					print("Under Majority rule, " + strin)
 				i += 1
 
 			elif sys.argv[i] == "-min":
-				minorityRule(population, candidates)
+				strin = minorityRule(population, candidates, typ)
+				if not strin:
+					print("Under Minority rule, there is no winner...\n")
+				else:
+					print("Under Minority rule, " + strin)
 				i += 1
 
 			elif sys.argv[i] == "-dict":
 				i += 1
 				dictator = sys.argv[i]
 				i += 1
-				dictatorship(population, candidates, dictator)
+				strin = dictatorship(population, candidates, dictator, typ)
+				if strin:
+					print("With " + dictator + " as dictator, " + strin)
 
 			elif sys.argv[i] == "-mon":
 				i += 1
 				kq = sys.argv[i]
 				i += 1
-				monarchy(population, candidates, kq)
+				strin = monarchy(population, candidates, kq, typ)
+				print("With " + kq + " as monarch, " + strin)
 
 			elif sys.argv[i] == "-quota":
 				i += 1
-				quot = int(sys.argv[i])
+				quot = sys.argv[i]
+				try:
+					quot = int(quot)
+				except:
+					quot = 'a'
 				i += 1
-				quota(population, candidates, quot)
+				strin = quota(population, candidates, quot, typ)
+				if not strin:
+					print("No candidates met the quota of " + str(quot) + "...\n")
+				else:
+					print("With quota = " + str(quot) + ", " + strin)
 
 			elif sys.argv[i] == "-plur":
 				i += 1
-				plurality(population, candidates)
+				strin = plurality(population, candidates, typ)
+				if not strin:
+					print("No candidate won a plurality...\n")
+				else:
+					print("Under plurality, " + strin)
 
 			else:
 				print("Bad flag! Halting...")
 				i = l
 				break
 
-	"""elif type == "rankedvote":
+	elif factors["TYPE"] == "rankedvote":
 
-		while i < l and (sys.argv[i])[0] == "-":
+		print(population)
 
-			if sys.argv[i] == "borda":
-				bordaCount(population, candidates)
-				i += 1
+		if sys.argv[i] == "-bord":
+			bordaCount(population, candidates, typ)
+			i += 1
 
-			elif"""
+		break
 
 
 
+
+print '\033[0m'

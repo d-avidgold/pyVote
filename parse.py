@@ -1,7 +1,11 @@
-def readBallot(line):
-	[lhs, rhs] = line.split(": ")
-	voters = lhs.split(", ")
-	ballot = rhs[0]
+
+def getBallot(rhs, flag):
+	if flag == "singlevote":
+		return rhs[0]
+	if flag == "rankedvote":
+		return rhs.split(' > ')
+	if flag == "approvalvote":
+		return rhs.split(", ")
 
 def formatCheck(file):
 	try:
@@ -30,9 +34,9 @@ def formatCheck(file):
 
 	fid.close()
 
-def singleParse(file):
+def parseFile(file, flag):
 	fid = open(file, "r")
-	importantFactors = ["SIZE", "CANDIDATES", "VOTERS", "BALLOTS"]
+	importantFactors = ["SIZE", "CANDIDATES", "VOTERS", "BALLOTS", "SCHEDULE"]
 	noCand = 0
 	noVoters = 0
 	CANDIDATES = []
@@ -60,10 +64,11 @@ def singleParse(file):
 					noCand = int(noCand)
 					noVoters = int(noVoters)
 				if factor == "BALLOTS":
+
 					while line:
 						[lhs, rhs] = line.split(": ")
 						voters = lhs.split(", ")
-						cand = rhs[0]
+						cand = getBallot(rhs, flag)
 						for i in voters:
 							if i not in VOTERS or VOTERS[i]:
 								print("Ballot error! Halting... ")
@@ -72,15 +77,22 @@ def singleParse(file):
 								VOTERS[i] = cand
 						line = (fid.readline()).strip()
 
+					bors = "BALLOTS"
+
+				if factor == "SCHEDULE":
+					while line:
+						[lhs, rhs] = line.split(": ")
+						voters = int(lhs)
+						cand = rhs
+						if cand in VOTERS:
+							VOTERS[cand] += voters
+						else:
+							VOTERS[cand] = voters
+						line = (fid.readline()).strip()
+
+					bors = "SCHEDULE"
 
 		line = (fid.readline()).strip()
 
-	return [VOTERS, CANDIDATES]
+	return [VOTERS, CANDIDATES, bors]
 
-def rankParse(file):
-
-	return True
-
-def approvalParse(file):
-
-	return True

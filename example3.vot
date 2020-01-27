@@ -1,0 +1,15 @@
+<NAME> 
+	Example 3
+<TYPE>
+	rankedvote
+<COMMENTS>
+	Example of a ranked voting system with three candidates and three voters.
+<SIZE>
+	3x3
+<CANDIDATES>
+	A, B, C
+<VOTERS>
+	X, Y, Z
+<BALLOTS>
+	X: A > B > C
+	Y, Z: C > B > A

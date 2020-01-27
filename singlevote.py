@@ -1,11 +1,16 @@
+from printWinners import printWinningCandidates
+def boldify(text):
+	return '\033[1m' + text + '\033[0m'
+
+def majorityRule(population, candidates, typ):
+
+	size = 0
+	for vote in population:
+		size += population[vote]
+	return (quota(population, candidates, size / 2, typ))
 
 
-def majorityRule(population, candidates):
-
-	return (quota(population, candidates, len(population) / 2))
-
-
-def minorityRule(population, candidates):
+def minorityRule(population, candidates, typ):
 
 	succ = []
 	tally = {}
@@ -13,10 +18,18 @@ def minorityRule(population, candidates):
 	for cand in candidates:
 		tally[cand] = 0
 
-	for voter in population:
-		vote = population[voter]
-		if vote in candidates:
-			tally[vote] += 1
+	if typ == "BALLOTS":
+		for voter in population:
+			vote = population[voter]
+			if vote in candidates:
+				tally[vote] += 1
+
+	elif typ == "SCHEDULE":
+		for vote in population:
+			noVoters = population[vote]
+			if vote in candidates:
+				tally[vote] += noVoters
+
 
 	maxsf = len(population)
 	for cand in tally:
@@ -26,41 +39,31 @@ def minorityRule(population, candidates):
 		elif tally[cand] == maxsf:
 			succ.append(cand)
 
-	if len(succ) == 1:
-		print("Under minority rule, the winner is " + succ[0] + "! \n")
-		return True
+	return(printWinningCandidates(succ))
 
-	if len(succ) == 2:
-		print("Under minority rule, the winners are " + succ[0] + " and " + succ[1] + "! \n")
-		return True
+def dictatorship(population, candidates, dictator, typ):
 
-	string = ""
-	for i in succ[:-1]:
-		string += i + ", "
-	string += "and " + succ[-1] + "! \n"
-	print("Under minority rule, the winners are " + string)
-	return True
-
-def dictatorship(population, candidates, dictator):
+	if typ == "SCHEDULE":
+		print("Must provide ballots for dictatorship voting!")
+		return False
 
 	if dictator in population:
-		print("With " + dictator + " as dictator, the winner is: " +  population[str(dictator)] + "!\n")
-		return True
+		return(printWinningCandidates([population[str(dictator)]]))
 
 	else:
 		print("Dictator did not vote! Error!! \n")
 		return False
 
-def monarchy(population, candidates, mon):
+def monarchy(population, candidates, mon, typ):
 
 	if mon in candidates:
-		print("Clearly, with " + mon + " as monarch, " + mon + " takes the crown! \n")
+		return(printWinningCandidates([mon]))
 
 	else:
 		print("Monarch " + mon + " did not run! Error!! \n")
 		return False
 
-def quota(population, candidates, quot):
+def quota(population, candidates, quot, typ):
 
 	if type(quot) != int:
 		print("Bad quota! \n")
@@ -71,35 +74,25 @@ def quota(population, candidates, quot):
 	for cand in candidates:
 		tally[cand] = 0
 
-	for voter in population:
-		vote = population[voter]
-		if vote in candidates:
-			tally[vote] += 1
+	if typ == "BALLOTS":
+		for voter in population:
+			vote = population[voter]
+			if vote in candidates:
+				tally[vote] += 1
+
+	elif typ == "SCHEDULE":
+		for vote in population:
+			noVoters = population[vote]
+			if vote in candidates:
+				tally[vote] += noVoters
 
 	for cand in tally:
 		if tally[cand] >= quot:
 			succ.append(cand)
 
-	if not succ:
-		print("No candidate met the quota of " + str(quot) + " :( \n")
-		return False
+	return(printWinningCandidates(succ))
 
-	if len(succ) == 1:
-		print(succ[0] + " met the quota of " + str(quot) + "! \n")
-		return True
-
-	if len(succ) == 2:
-		print("All of " + succ[0] + " and " + succ[1] + " met the quota of " + str(quot) + "! \n")
-		return True
-
-	string = ""
-	for i in succ[:-1]:
-		string += i + ", "
-	string += "and " + succ[-1]
-	print("All of " + string + " met the quota of " + str(quot) + "! \n")
-	return True
-
-def plurality(population, candidates):
+def plurality(population, candidates, typ):
 
 	succ = []
 	tally = {}
@@ -107,10 +100,17 @@ def plurality(population, candidates):
 	for cand in candidates:
 		tally[cand] = 0
 
-	for voter in population:
-		vote = population[voter]
-		if vote in candidates:
-			tally[vote] += 1
+	if typ == "BALLOTS":
+		for voter in population:
+			vote = population[voter]
+			if vote in candidates:
+				tally[vote] += 1
+
+	elif typ == "SCHEDULE":
+		for vote in population:
+			noVoters = population[vote]
+			if vote in candidates:
+				tally[vote] += noVoters
 
 	maxsf = 0
 	for cand in tally:
@@ -120,17 +120,4 @@ def plurality(population, candidates):
 		elif tally[cand] == maxsf:
 			succ.append(cand)
 
-	if len(succ) == 1:
-		print("Winner under plurality is " + succ[0] + "! \n")
-		return True
-
-	if len(succ) == 2:
-		print("The winners under plurality are " + succ[0] + " and " + succ[1] + "! \n")
-		return True
-
-	string = ""
-	for i in succ[:-1]:
-		string += i + ", "
-	string += "and " + succ[-1] + "! \n"
-	print("The winners under plurality are " + string)
-	return True
+	return(printWinningCandidates(succ))
